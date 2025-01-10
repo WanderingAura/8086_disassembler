@@ -39,7 +39,7 @@ u16 InstStream::ParseData(bool isWide) {
 
     assert(readPointer <= size);
     // perform sign extension
-    return (i16)*(i8 *)NextByte();
+    return (i16)(i8)NextByte();
 }
 
 void InstStream::GetBitFields(u32 &bitFieldFlags, u32 *bitFieldValues, std::array<BitField, MAX_FIELD_NUM> fields) {
@@ -137,11 +137,16 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
 }
 
 Instruction InstStream::NextInstruction() {
+    if (readPointer >= size) {
+        return {};
+    }
     for (const InstructionFormat& format : formats) {
         Instruction inst = TryDecode(format);
         if (inst) {
+            currentInstPointer = readPointer;
             return inst;
         }
     }
+    std::cerr << "failed to decode instruction" << std::endl;
     return {};
 }
