@@ -10,7 +10,11 @@
 #define DIRECT_ADDRESS_IDX 8
 
 inline Operand InstStream::GetRegOperand(u8 regVal, u8 widthVal) {
-    return Operand{ OperandType::REGISTER, {regVal, widthVal} };
+    Operand res = {};
+    res.operandType = OperandType::REGISTER;
+    res.reg.regIdx = regVal;
+    res.reg.isWide = widthVal;
+    return res;
 }
 
 InstStream::InstStream(std::ifstream *binFile) {
@@ -29,12 +33,10 @@ u16 InstStream::ParseData(bool isWide) {
     if (isWide) {
         u8 byte1 = NextByte();
         u8 byte2 = NextByte();
-        readPointer += 2;
         assert(readPointer <= size);
         return (byte2 << 8) | byte1;
     }
 
-    readPointer++;
     assert(readPointer <= size);
     // perform sign extension
     return (i16)*(i8 *)NextByte();
@@ -53,7 +55,7 @@ void InstStream::GetBitFields(u32 &bitFieldFlags, u32 *bitFieldValues, std::arra
         if (testField.numBits != 0) {
             if (bitsRemaining == 0) {
                 bitsRemaining = 8;
-                currentByte = this->NextByte();
+                currentByte = NextByte();
             }
 
             assert(testField.numBits <= bitsRemaining);
@@ -63,7 +65,7 @@ void InstStream::GetBitFields(u32 &bitFieldFlags, u32 *bitFieldValues, std::arra
             readVal = (currentByte >> bitsRemaining);
 
             // set any used bits to zero
-            currentByte &= (0xff >> testField.numBits);
+            currentByte &= (0xff >> (8 - bitsRemaining));
         }
 
         if (testField.name == BitsUsage::Opcode && testField.val != readVal) {
@@ -78,18 +80,15 @@ void InstStream::GetBitFields(u32 &bitFieldFlags, u32 *bitFieldValues, std::arra
     }
 }
 
-Instruction InstStream::TryDecode(InstructionFormat format) {
-    u32 bitFieldFlags;
-    u32 bitFieldValues[(u8)BitsUsage::NumElements];
+Instruction InstStream::TryDecode(const InstructionFormat format) {
+    u32 bitFieldFlags = 0;
+    u32 bitFieldValues[(u8)BitsUsage::NumElements] = {};
 
     GetBitFields(bitFieldFlags, bitFieldValues, format.fields);
 
-    Instruction result = {};
-
     if (bitFieldFlags == 0) {
         // instruction did not match given format
-        assert(!result);
-        return result;
+        return {};
     }
 
     // number of bits still to be used from the current byte
@@ -113,31 +112,32 @@ Instruction InstStream::TryDecode(InstructionFormat format) {
     
     i16 disp = bitFieldValues[(u8)BitsUsage::Disp];
     
-    Operand *regOperand = &result.operands[dirVal ? 0 : 1];
-    Operand *modOperand = &result.operands[dirVal ? 1 : 0];
+    Operand regOperand;
+    Operand modOperand;
 
     if (bitFieldFlags & (1 << (u8)BitsUsage::Reg)) {
-        *regOperand = GetRegOperand(regVal, widthVal);
+        regOperand = GetRegOperand(regVal, widthVal);
     }
     if (bitFieldFlags & (1 << (u8)BitsUsage::RegMem)) {
         if (modVal == 0b11) {
-            *modOperand = GetRegOperand(regMemVal, widthVal);
+            modOperand = GetRegOperand(regMemVal, widthVal);
         } else {
-            modOperand->operandType = OperandType::MEMORY;
+            modOperand.operandType = OperandType::MEMORY;
             if (hasDirectAddress) {
-                modOperand->address.regIdx = DIRECT_ADDRESS_IDX;
+                modOperand.address.regIdx = DIRECT_ADDRESS_IDX;
             } else {
-                modOperand->address.regIdx = regMemVal;
+                modOperand.address.regIdx = regMemVal;
             }
-            modOperand->address.disp = disp;
+            modOperand.address.disp = disp;
         }
     }
-    std::cerr << "could not match instruction with available formats" << std::endl;
-    return result;
+    return dirVal ? 
+        Instruction(format.op, regOperand, modOperand) : 
+        Instruction(format.op, modOperand, regOperand);
 }
 
 Instruction InstStream::NextInstruction() {
-    for (InstructionFormat format : formats) {
+    for (const InstructionFormat& format : formats) {
         Instruction inst = TryDecode(format);
         if (inst) {
             return inst;

@@ -24,6 +24,8 @@ std::string Instruction::GetMemoryOpStr(const Operand op) {
     return "[" + regExp + " " + dispStr + "]";
 }
 
+ Instruction::Instruction(OpType type, Operand op1, Operand op2) : opType(type), operands{op1, op2} {}
+
 std::string Instruction::GetOperandStr(const Operand op) {
     switch (op.operandType) {
         case OperandType::NONE: {

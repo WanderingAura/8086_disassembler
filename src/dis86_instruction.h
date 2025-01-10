@@ -48,9 +48,11 @@ public:
         return this->opType != OpType::NONE;
     }
 
-    Operand operands[2];
+    Instruction(OpType type = {}, Operand op1 = {}, Operand op2 = {});
+
 private:
     OpType opType;
+    Operand operands[2];
 
     static const std::string registers[8][2];
 
