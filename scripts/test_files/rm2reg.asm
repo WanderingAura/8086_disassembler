@@ -19,9 +19,10 @@ mov di, [di]
 
 ; 8 bit disp
 mov ax, [bx+si+100]
+mov bx, [bx+di-10]
 
 ; 16 bit disp
 mov bx, [bx+di+16000]
 
 ; direct address
-mov ax, [13495]
+mov bp, [13495]
