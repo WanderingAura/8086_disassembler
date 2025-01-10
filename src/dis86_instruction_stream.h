@@ -40,7 +40,8 @@ public:
     Instruction NextInstruction();
     InstStream(std::ifstream *binFile);
 private:
-    u8 bytes[1024*1024];
+     // if too big may need to malloc memory to prevent stack overflow
+    u8 bytes[1024*256];
     std::streamsize size;
     u32 currentInstPointer;
     u32 readPointer;
