@@ -10,7 +10,7 @@ struct Register {
 
 struct EffectiveAddressExp {
     u8 regIdx;
-    u16 disp;
+    i16 disp;
 };
 
 enum class OperandType: u8 {

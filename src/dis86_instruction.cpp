@@ -4,6 +4,7 @@
 #include <fstream>
 #include <array>
 #include <cassert>
+#include <cmath>
 
 #define MAX_FIELD_NUM 16
 #define DIRECT_ADDRESS_IDX 8
@@ -11,20 +12,24 @@
 
 std::string Instruction::GetMemoryOpStr(const Operand op) {
     u8 expIdx = op.address.regIdx;
-    u16 disp = op.address.disp;
+    i16 disp = op.address.disp;
     assert(expIdx < 9 && disp <= 0xffff);
-    std::string dispStr = std::to_string(disp);
+    std::string dispStr = std::to_string(std::abs(disp));
     if (expIdx == 8) {
-        return "[" + dispStr + "]";
+        return disp < 0 ? "[-" + dispStr + "]" : "[" + dispStr + "]";
     }
     std::string regExp = addressExps[expIdx];
     if (disp == 0) {
         return "[" + regExp + "]";
     }
-    return "[" + regExp + " " + dispStr + "]";
+    std::string signStr = " + ";
+    if (disp < 0) {
+        signStr[1] = '-';
+    }
+    return "[" + regExp + signStr + dispStr + "]";
 }
 
- Instruction::Instruction(OpType type, Operand op1, Operand op2) : opType(type), operands{op1, op2} {}
+Instruction::Instruction(OpType type, Operand op1, Operand op2) : opType(type), operands{op1, op2} {}
 
 std::string Instruction::GetOperandStr(const Operand op) {
     switch (op.operandType) {
