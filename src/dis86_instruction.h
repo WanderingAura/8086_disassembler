@@ -41,7 +41,6 @@ enum class OperandType: u8 {
     REGISTER,
     IMMEDIATE,
     MEMORY,
-    MEM_DISP,
 };
 
 struct Operand {
