@@ -46,7 +46,7 @@ private:
     u32 currentInstPointer;
     u32 readPointer;
 
-    static const InstructionFormat formats[2];
+    static const InstructionFormat formats[4];
 
     static inline Operand GetRegOperand(u8 regVal, u8 widthVal);
 
