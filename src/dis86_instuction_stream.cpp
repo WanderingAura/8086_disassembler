@@ -12,12 +12,12 @@
 inline Operand InstStream::GetRegOperand(u8 regVal, u8 widthVal) {
     Operand res = {};
     res.operandType = OperandType::REGISTER;
-    res.reg.regIdx = regVal;
+    res.reg.regIdx = (RegisterIdx)regVal;
     res.reg.isWide = widthVal;
     return res;
 }
 
-InstStream::InstStream(std::ifstream *binFile) {
+InstStream::InstStream(std::istream *binFile) {
     binFile->read((char *)bytes, ARR_SIZE(bytes));
     size = binFile->gcount();
     currentInstPointer = 0;
@@ -124,9 +124,9 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
         } else {
             modOperand.operandType = OperandType::MEMORY;
             if (hasDirectAddress) {
-                modOperand.address.regIdx = DIRECT_ADDRESS_IDX;
+                modOperand.address.expIdx = AddressExpIdx::DIRECT;
             } else {
-                modOperand.address.regIdx = regMemVal;
+                modOperand.address.expIdx = (AddressExpIdx)regMemVal;
             }
             modOperand.address.disp = disp;
         }

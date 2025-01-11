@@ -3,13 +3,36 @@
 #include <string>
 #include <array>
 
+enum class RegisterIdx : u8 {
+    AL_AX,
+    CL_CX,
+    DL_DX,
+    BL_BX,
+    AH_SP,
+    CH_BP,
+    DH_SI,
+    BH_DI,
+};
+
+enum class AddressExpIdx : u8 {
+    BX_SI,
+    BX_DI,
+    BP_SI,
+    BP_DI,
+    SI,
+    DI,
+    BP,
+    BX,
+    DIRECT,
+};
+
 struct Register {
-    u8 regIdx;
-    u8 isWide;
+    RegisterIdx regIdx;
+    b8 isWide;
 };
 
 struct EffectiveAddressExp {
-    u8 regIdx;
+    AddressExpIdx expIdx;
     i16 disp;
 };
 

@@ -11,7 +11,7 @@
 
 
 std::string Instruction::GetMemoryOpStr(const Operand op) {
-    u8 expIdx = op.address.regIdx;
+    u8 expIdx = (u8)op.address.expIdx;
     i16 disp = op.address.disp;
     assert(expIdx < 9 && disp <= 0xffff);
     std::string dispStr = std::to_string(std::abs(disp));
@@ -37,7 +37,7 @@ std::string Instruction::GetOperandStr(const Operand op) {
             return "";
         }
         case OperandType::REGISTER: {
-            u8 regIdx = op.reg.regIdx;
+            u8 regIdx = (u8)op.reg.regIdx;
             u8 isWide = op.reg.isWide;
             assert(regIdx < 8 && isWide < 2);
             return registers[regIdx][isWide];

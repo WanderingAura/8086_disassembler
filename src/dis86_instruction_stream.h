@@ -38,7 +38,7 @@ struct InstructionFormat {
 class InstStream {
 public:
     Instruction NextInstruction();
-    InstStream(std::ifstream *binFile);
+    InstStream(std::istream *binFile);
 private:
      // if too big may need to malloc memory to prevent stack overflow
     u8 bytes[1024*256];
