@@ -1,5 +1,4 @@
 
-
 add_executable(dis86_test 
     test_mov.cpp 
     ../src/dis86_instruction.cpp

@@ -70,6 +70,34 @@ void Instruction::Print(){
     return;
 }
 
+
+explicit Instruction::operator bool() const {
+    return opType != OpType::NONE;
+}
+
+// used for comparing instructions for testing
+bool Instruction::operator==(const Instruction& rhs) const{
+    return opType == rhs.opType &&
+           operands[0] == rhs.operands[0] &&
+           operands[1] == rhs.operands[1];
+}
+bool Operand::operator==(const Operand& rhs) const {
+    if (operandType != rhs.operandType) {
+        return false;
+    }
+
+    switch (operandType) {
+        case OperandType::MEMORY:
+            return address.expIdx == rhs.address.expIdx &&
+                   address.disp == rhs.address.disp;
+        case OperandType::REGISTER:
+            return reg.regIdx == rhs.reg.regIdx &&
+                   reg.isWide == rhs.reg.isWide;
+        default:
+            return false;
+    }
+}
+
 const std::array<std::string, (u8)OpType::NUM_OPS> Instruction::opStrs = {{
     "", "add", "sub", "cmp", "mov"
 }};

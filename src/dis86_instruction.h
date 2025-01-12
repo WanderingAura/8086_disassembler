@@ -50,6 +50,8 @@ struct Operand {
         Register reg;
         u16 immU16;
     };
+
+    bool operator==(const Operand& rhs) const;
 };
 
 enum class OpType : u8 {
@@ -66,11 +68,12 @@ class Instruction {
 public:
     void Print();
 
-    explicit operator bool() const {
-        return this->opType != OpType::NONE;
-    }
+    explicit operator bool() const;
 
     Instruction(OpType type = {}, Operand op1 = {}, Operand op2 = {});
+
+    bool operator==(const Instruction& rhs) const; 
+    
 
 private:
     OpType opType;
