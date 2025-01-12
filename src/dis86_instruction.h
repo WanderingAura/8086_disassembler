@@ -70,7 +70,9 @@ public:
 
     explicit operator bool() const;
 
-    Instruction(OpType type = {}, Operand op1 = {}, Operand op2 = {});
+    Instruction(OpType type, Operand op1, Operand op2);
+
+    Instruction();
 
     bool operator==(const Instruction& rhs) const; 
     

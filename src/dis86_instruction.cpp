@@ -31,6 +31,8 @@ std::string Instruction::GetMemoryOpStr(const Operand op) {
 
 Instruction::Instruction(OpType type, Operand op1, Operand op2) : opType(type), operands{op1, op2} {}
 
+Instruction::Instruction() : opType{}, operands{} {}
+
 std::string Instruction::GetOperandStr(const Operand op) {
     switch (op.operandType) {
         case OperandType::NONE: {
@@ -71,7 +73,7 @@ void Instruction::Print(){
 }
 
 
-explicit Instruction::operator bool() const {
+Instruction::operator bool() const {
     return opType != OpType::NONE;
 }
 
