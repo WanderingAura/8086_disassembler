@@ -98,7 +98,9 @@ TEST(MOV_TEST, RM2Reg_Decoding) {
     Instruction inst;
     u32 instCount = 0;
     while (inst = instStream.NextInstruction()) {
-        ASSERT_EQ(inst, expectedInsts[instCount]);
+        ASSERT_EQ(inst, expectedInsts[instCount])
+            << "instruction mismatch, instruction index:"
+            << instCount << std::endl;
         instCount++;
     }
 }
