@@ -13,16 +13,18 @@ mov cl, dl
 ; no disp
 mov ax, [bx+si]
 mov bx, [bx+di]
-mov cx, [bp+si]
-mov cx, [bp+di]
-mov di, [di]
+mov [bp+si], cx
+mov [bp+di], dx
+mov [di], di
 
 ; 8 bit disp
 mov ax, [bx+si+100]
-mov bx, [bx+di-10]
+mov [bx+di-10], bx
 
 ; 16 bit disp
 mov bx, [bx+di+16000]
+mov [bx-18934], ax
 
 ; direct address
-mov bp, [13495]
+mov [13495], bp
+mov bp, [39]
