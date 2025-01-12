@@ -36,6 +36,14 @@ struct EffectiveAddressExp {
     i16 disp;
 };
 
+struct Immediate {
+    union {
+        u16 immU16;
+        i16 immI16;
+    };
+    u8 isWide;
+};
+
 enum class OperandType: u8 {
     NONE,
     REGISTER,
@@ -48,7 +56,7 @@ struct Operand {
     union {
         EffectiveAddressExp address;
         Register reg;
-        u16 immU16;
+        Immediate immediate;
     };
 
     bool operator==(const Operand& rhs) const;

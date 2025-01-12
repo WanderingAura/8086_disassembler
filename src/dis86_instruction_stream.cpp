@@ -112,28 +112,41 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
     
     i16 disp = bitFieldValues[(u8)BitsUsage::Disp];
     
-    Operand regOperand;
-    Operand modOperand;
+    Operand operands[2] = {};
+    Operand *regOperand = &operands[dirVal ? 0 : 1];
+    Operand *modOperand = &operands[dirVal ? 1 : 0];
 
     if (bitFieldFlags & (1 << (u8)BitsUsage::Reg)) {
-        regOperand = GetRegOperand(regVal, widthVal);
+        *regOperand = GetRegOperand(regVal, widthVal);
     }
     if (bitFieldFlags & (1 << (u8)BitsUsage::RegMem)) {
         if (modVal == 0b11) {
-            modOperand = GetRegOperand(regMemVal, widthVal);
+            *modOperand = GetRegOperand(regMemVal, widthVal);
         } else {
-            modOperand.operandType = OperandType::MEMORY;
+            modOperand->operandType = OperandType::MEMORY;
             if (hasDirectAddress) {
-                modOperand.address.expIdx = AddressExpIdx::DIRECT;
+                modOperand->address.expIdx = AddressExpIdx::DIRECT;
             } else {
-                modOperand.address.expIdx = (AddressExpIdx)regMemVal;
+                modOperand->address.expIdx = (AddressExpIdx)regMemVal;
             }
-            modOperand.address.disp = disp;
+            modOperand->address.disp = disp;
         }
     }
-    return dirVal ? 
-        Instruction(format.op, regOperand, modOperand) : 
-        Instruction(format.op, modOperand, regOperand);
+
+    Operand *nextUnusedOp = (operands[0].operandType == OperandType::NONE) ?
+        &operands[0] : &operands[1];
+    if (nextUnusedOp->operandType != OperandType::NONE) {
+        // both operands have been filled, return instruction
+        return Instruction(format.op, operands[0], operands[1]);
+    }
+
+    if (bitFieldFlags & (1 << BitsUsage::HasData)) {
+        nextUnusedOp->operandType = OperandType::IMMEDIATE;
+        nextUnusedOp->immediate.immU16 = ParseData(dataIsW);
+        nextUnusedOp->immediate.isWide = dataIsW;
+    }
+
+    return Instruction(format.op, operands[0], operands[1]);
 }
 
 Instruction InstStream::NextInstruction() {

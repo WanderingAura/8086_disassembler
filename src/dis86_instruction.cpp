@@ -45,7 +45,7 @@ std::string Instruction::GetOperandStr(const Operand op) {
             return registers[regIdx][isWide];
         }
         case OperandType::IMMEDIATE: {
-            return std::to_string(op.immU16);
+            return std::to_string(op.immediate.immU16);
         }
         case OperandType::MEMORY: {
             return GetMemoryOpStr(op);
@@ -95,6 +95,9 @@ bool Operand::operator==(const Operand& rhs) const {
         case OperandType::REGISTER:
             return reg.regIdx == rhs.reg.regIdx &&
                    reg.isWide == rhs.reg.isWide;
+        case OperandType::IMMEDIATE:
+            return immediate.immI16 == rhs.immediate.immI16 &&
+                   immediate.isWide == rhs.immediate.isWide;
         default:
             return false;
     }
