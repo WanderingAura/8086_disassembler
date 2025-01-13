@@ -45,7 +45,7 @@ std::string Instruction::GetOperandStr(const Operand op) {
             return registers[regIdx][isWide];
         }
         case OperandType::IMMEDIATE: {
-            return std::to_string(op.immediate.immU16);
+            return (op.immediate.isWide ? "word " : "byte ")  + std::to_string(op.immediate.immI16);
         }
         case OperandType::MEMORY: {
             return GetMemoryOpStr(op);

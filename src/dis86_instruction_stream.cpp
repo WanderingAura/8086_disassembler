@@ -140,9 +140,9 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
         return Instruction(format.op, operands[0], operands[1]);
     }
 
-    if (bitFieldFlags & (1 << BitsUsage::HasData)) {
+    if (hasData) {
         nextUnusedOp->operandType = OperandType::IMMEDIATE;
-        nextUnusedOp->immediate.immU16 = ParseData(dataIsW);
+        nextUnusedOp->immediate.immU16 = bitFieldValues[(u8)BitsUsage::Data];
         nextUnusedOp->immediate.isWide = dataIsW;
     }
 

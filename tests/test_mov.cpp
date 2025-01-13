@@ -31,12 +31,6 @@ TEST(MOV_TEST, RM2Reg_Decoding) {
     // TODO: execute nasm on rm2reg.asm and confirm the bytes are the same
     // see rm2reg.asm
 
-    const Instruction expected = Instruction(
-        OpType::MOV,
-        GetRegOperand(RegisterIdx::AL_AX, true),
-        GetRegOperand(RegisterIdx::BL_BX, true)
-    );
-
     const Instruction expectedInsts[] = {
         // reg to reg mov instructions
         Instruction(OpType::MOV, 
@@ -96,7 +90,6 @@ TEST(MOV_TEST, RM2Reg_Decoding) {
         Instruction(OpType::MOV, 
             GetRegOperand(RegisterIdx::CH_BP, true),
             GetAddressOperand(AddressExpIdx::DIRECT, 39)),
-
     };
 
     const char rm2reg[] = {
@@ -114,7 +107,7 @@ TEST(MOV_TEST, RM2Reg_Decoding) {
     InstStream instStream(&byteStream);
 
     Instruction inst;
-    static u32 instCount = 0;
+    u32 instCount = 0;
     while (inst = instStream.NextInstruction()) {
         ASSERT_TRUE(instCount < ARR_SIZE(expectedInsts));
         EXPECT_EQ(inst, expectedInsts[instCount])
@@ -122,4 +115,8 @@ TEST(MOV_TEST, RM2Reg_Decoding) {
             << instCount << std::endl;
         instCount++;
     }
+}
+
+TEST(MOV_TEST, Imm2Mem_Decoding) {
+
 }
