@@ -15,6 +15,7 @@ enum BitsUsage : u8{
     RegMem,
     Direction,
     Width,
+    SignExt,
     Disp,
     Data,
 
@@ -46,12 +47,12 @@ private:
     u32 currentInstPointer;
     u32 readPointer;
 
-    static const InstructionFormat formats[5];
+    static const InstructionFormat formats[20];
 
     static inline Operand GetRegOperand(u8 regVal, u8 widthVal);
 
     u8 NextByte();
-    u16 ParseData(bool isWide);
+    u16 ParseData(bool isWide, bool isSignExt);
 
     void GetBitFields(u32 &bitFieldFlags,
         std::array<u32, BitsUsage::NumElements>& bitFieldValues,

@@ -68,6 +68,8 @@ enum class OpType : u8 {
     SUB,
     CMP,
     MOV,
+    ADC,
+    SBB,
     NUM_OPS
 };
 

@@ -29,7 +29,9 @@ u8 InstStream::NextByte() {
     return bytes[readPointer++];
 }
 
-u16 InstStream::ParseData(bool isWide) {
+u16 InstStream::ParseData(bool isWide, bool isSignExt) {
+    assert(isSignExt == 0 || isSignExt == 1);
+    assert(isWide == 0 || isWide == 1);
     if (isWide) {
         u8 byte1 = NextByte();
         u8 byte2 = NextByte();
@@ -39,7 +41,9 @@ u16 InstStream::ParseData(bool isWide) {
 
     assert(readPointer <= size);
     // perform sign extension
-    return (i16)(i8)NextByte();
+    if (isSignExt)
+        return (i16)(i8)NextByte();
+    return NextByte();
 }
 
 void InstStream::GetBitFields(u32 &bitFieldFlags,
@@ -98,6 +102,7 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
     u32 modVal = bitFieldValues[BitsUsage::Mod];
     u32 dirVal = bitFieldValues[BitsUsage::Direction];
     u32 widthVal = bitFieldValues[BitsUsage::Width];
+    u32 signVal = bitFieldValues[BitsUsage::SignExt];
     u32 regVal = bitFieldValues[BitsUsage::Reg];
     u32 regMemVal = bitFieldValues[BitsUsage::RegMem];
 
@@ -105,12 +110,12 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
     bool hasDisp = (modVal == 0b01 || modVal == 0b10 || hasDirectAddress);
     bool dispIsW = (modVal == 0b10 || hasDirectAddress);
     bool hasData = bitFieldValues[BitsUsage::HasData];
-    bool dataIsW = (bitFieldValues[BitsUsage::WDataIfW] && widthVal);
+    bool dataIsW = (bitFieldValues[BitsUsage::WDataIfW] && widthVal && !signVal);
 
     if (hasDisp)
-        bitFieldValues[BitsUsage::Disp] = ParseData(dispIsW);
+        bitFieldValues[BitsUsage::Disp] = ParseData(dispIsW, signVal);
     if (hasData)
-        bitFieldValues[BitsUsage::Data] = ParseData(dataIsW);
+        bitFieldValues[BitsUsage::Data] = ParseData(dataIsW, signVal);
     
     i16 disp = bitFieldValues[BitsUsage::Disp];
     
