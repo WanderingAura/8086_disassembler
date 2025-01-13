@@ -104,7 +104,7 @@ bool Operand::operator==(const Operand& rhs) const {
 }
 
 const std::array<std::string, (u8)OpType::NUM_OPS> Instruction::opStrs = {{
-    "", "add", "sub", "cmp", "mov"
+    "", "add", "sub", "cmp", "mov", "adc", "sbb",
 }};
 
 const std::string Instruction::registers[8][2] = {

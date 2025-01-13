@@ -90,8 +90,8 @@ static const InstructionFormat Imm2RM(OpType type, BitField opField) {
             std::cerr << "err not Imm2RM op type not matched" << std::endl;
             break;
     }
-    return { type, {{ opField, W_BIT, S_BIT,
-        MOD_BITS, BitLiteral(0b000, 3), RM_BITS,
+    return { type, {{ opField, S_BIT, W_BIT,
+        MOD_BITS, BitLiteral(literal, 3), RM_BITS,
         HAS_DATA, WDATA_IF_W, DummyD(OpDirection::ModFirst) }} };
 }
 
@@ -111,23 +111,23 @@ const InstructionFormat InstStream::formats[] = {
     
     // add instructions
     RM2Reg(OpType::ADD, BitLiteral(0b000000, 6)),
-    Imm2RM(OpType::ADD, BitLiteral(0b1000000, 6)),
+    Imm2RM(OpType::ADD, BitLiteral(0b100000, 6)),
     ImmOpAcc(OpType::ADD, BitLiteral(0b0000010, 7)),
 
     // adc instructions
     RM2Reg(OpType::ADC, BitLiteral(0b000100, 6)),
-    Imm2RM(OpType::ADC, BitLiteral(0b1000000, 6)),
+    Imm2RM(OpType::ADC, BitLiteral(0b100000, 6)),
     ImmOpAcc(OpType::ADC, BitLiteral(0b0001010, 7)),
     // sub instructions
     RM2Reg(OpType::SUB, BitLiteral(0b001010, 6)),
-    Imm2RM(OpType::SUB, BitLiteral(0b1000000, 6)),
+    Imm2RM(OpType::SUB, BitLiteral(0b100000, 6)),
     ImmOpAcc(OpType::SUB, BitLiteral(0b0010110, 7)),
     // sbb instructions
     RM2Reg(OpType::SBB, BitLiteral(0b000110, 6)),
-    Imm2RM(OpType::SBB, BitLiteral(0b1000000, 6)),
+    Imm2RM(OpType::SBB, BitLiteral(0b100000, 6)),
     ImmOpAcc(OpType::SBB, BitLiteral(0b0001110, 7)),
     // cmp instructions
     RM2Reg(OpType::CMP, BitLiteral(0b001110, 6)),
-    Imm2RM(OpType::CMP, BitLiteral(0b1000000, 6)),
+    Imm2RM(OpType::CMP, BitLiteral(0b100000, 6)),
     ImmOpAcc(OpType::CMP, BitLiteral(0b0011110, 7)),
 };
