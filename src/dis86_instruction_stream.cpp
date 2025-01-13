@@ -42,7 +42,9 @@ u16 InstStream::ParseData(bool isWide) {
     return (i16)(i8)NextByte();
 }
 
-void InstStream::GetBitFields(u32 &bitFieldFlags, u32 *bitFieldValues, std::array<BitField, MAX_FIELD_NUM> fields) {
+void InstStream::GetBitFields(u32 &bitFieldFlags,
+    std::array<u32, BitsUsage::NumElements>& bitFieldValues,
+    const std::array<BitField, MAX_FIELD_NUM>& fields) {
     u8 bitsRemaining = 0;
     u8 currentByte = 0;
     for (BitField testField : fields) {
@@ -82,8 +84,10 @@ void InstStream::GetBitFields(u32 &bitFieldFlags, u32 *bitFieldValues, std::arra
 
 Instruction InstStream::TryDecode(const InstructionFormat format) {
     u32 bitFieldFlags = 0;
-    u32 bitFieldValues[(u8)BitsUsage::NumElements] = {};
+    std::array<u32, BitsUsage::NumElements> bitFieldValues = {};
 
+    // TODO: this can be refactored into a class with all required instruction info
+    // InstructionInfo::GetBitFields
     GetBitFields(bitFieldFlags, bitFieldValues, format.fields);
 
     if (bitFieldFlags == 0) {
@@ -91,35 +95,33 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
         return {};
     }
 
-    // number of bits still to be used from the current byte
-
-    u32 modVal = bitFieldValues[(u8)BitsUsage::Mod];
-    u32 dirVal = bitFieldValues[(u8)BitsUsage::Direction];
-    u32 widthVal = bitFieldValues[(u8)BitsUsage::Width];
-    u32 regVal = bitFieldValues[(u8)BitsUsage::Reg];
-    u32 regMemVal = bitFieldValues[(u8)BitsUsage::RegMem];
+    u32 modVal = bitFieldValues[BitsUsage::Mod];
+    u32 dirVal = bitFieldValues[BitsUsage::Direction];
+    u32 widthVal = bitFieldValues[BitsUsage::Width];
+    u32 regVal = bitFieldValues[BitsUsage::Reg];
+    u32 regMemVal = bitFieldValues[BitsUsage::RegMem];
 
     bool hasDirectAddress = ((modVal == 0b00 && regMemVal == 0b110));
     bool hasDisp = (modVal == 0b01 || modVal == 0b10 || hasDirectAddress);
     bool dispIsW = (modVal == 0b10 || hasDirectAddress);
-    bool hasData = bitFieldValues[(u8)BitsUsage::HasData];
-    bool dataIsW = (bitFieldValues[(u8)BitsUsage::WDataIfW] && widthVal);
+    bool hasData = bitFieldValues[BitsUsage::HasData];
+    bool dataIsW = (bitFieldValues[BitsUsage::WDataIfW] && widthVal);
 
     if (hasDisp)
-        bitFieldValues[(u8)BitsUsage::Disp] = ParseData(dispIsW);
+        bitFieldValues[BitsUsage::Disp] = ParseData(dispIsW);
     if (hasData)
-        bitFieldValues[(u8)BitsUsage::Data] = ParseData(dataIsW);
+        bitFieldValues[BitsUsage::Data] = ParseData(dataIsW);
     
-    i16 disp = bitFieldValues[(u8)BitsUsage::Disp];
+    i16 disp = bitFieldValues[BitsUsage::Disp];
     
     Operand operands[2] = {};
     Operand *regOperand = &operands[dirVal ? 0 : 1];
     Operand *modOperand = &operands[dirVal ? 1 : 0];
 
-    if (bitFieldFlags & (1 << (u8)BitsUsage::Reg)) {
+    if (bitFieldFlags & (1 << BitsUsage::Reg)) {
         *regOperand = GetRegOperand(regVal, widthVal);
     }
-    if (bitFieldFlags & (1 << (u8)BitsUsage::RegMem)) {
+    if (bitFieldFlags & (1 << BitsUsage::RegMem)) {
         if (modVal == 0b11) {
             *modOperand = GetRegOperand(regMemVal, widthVal);
         } else {
@@ -142,7 +144,7 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
 
     if (hasData) {
         nextUnusedOp->operandType = OperandType::IMMEDIATE;
-        nextUnusedOp->immediate.immU16 = bitFieldValues[(u8)BitsUsage::Data];
+        nextUnusedOp->immediate.immU16 = bitFieldValues[BitsUsage::Data];
         nextUnusedOp->immediate.isWide = dataIsW;
     }
 

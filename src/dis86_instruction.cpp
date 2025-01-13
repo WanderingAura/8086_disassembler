@@ -10,7 +10,7 @@
 #define DIRECT_ADDRESS_IDX 8
 
 
-std::string Instruction::GetMemoryOpStr(const Operand op) {
+std::string Instruction::GetMemoryOpStr(const Operand& op) {
     u8 expIdx = (u8)op.address.expIdx;
     i16 disp = op.address.disp;
     assert(expIdx < 9 && disp <= 0xffff);
@@ -33,7 +33,7 @@ Instruction::Instruction(OpType type, Operand op1, Operand op2) : opType(type), 
 
 Instruction::Instruction() : opType{}, operands{} {}
 
-std::string Instruction::GetOperandStr(const Operand op) {
+std::string Instruction::GetOperandStr(const Operand& op) {
     switch (op.operandType) {
         case OperandType::NONE: {
             return "";

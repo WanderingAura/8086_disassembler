@@ -95,6 +95,6 @@ private:
 
     static const std::string addressExps[9];
 
-    std::string GetMemoryOpStr(const Operand op);
-    std::string GetOperandStr(const Operand op);
+    std::string GetMemoryOpStr(const Operand& op);
+    std::string GetOperandStr(const Operand& op);
 };

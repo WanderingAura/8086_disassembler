@@ -53,7 +53,9 @@ private:
     u8 NextByte();
     u16 ParseData(bool isWide);
 
-    void GetBitFields(u32 &bitFieldFlags, u32 *bitFieldValues, std::array<BitField, MAX_FIELD_NUM> fields);
+    void GetBitFields(u32 &bitFieldFlags,
+        std::array<u32, BitsUsage::NumElements>& bitFieldValues,
+        const std::array<BitField, MAX_FIELD_NUM>& fields);
 
     Instruction TryDecode(InstructionFormat format);
 };
