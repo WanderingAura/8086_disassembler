@@ -173,3 +173,4 @@ TEST(MOV_TEST, Imm2Mem_Decoding) {
     TestDecodeBytes(imm2mem, ARR_SIZE(imm2mem),
         expectedInsts, ARR_SIZE(expectedInsts));
 }
+
