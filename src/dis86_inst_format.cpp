@@ -83,6 +83,9 @@ static const InstructionFormat Imm2RM(OpType type, BitField opField) {
         case OpType::SBB:
             literal = 0b011;
             break;
+        case OpType::CMP:
+            literal = 0b111;
+            break;
         default:
             std::cerr << "err not Imm2RM op type not matched" << std::endl;
             break;
