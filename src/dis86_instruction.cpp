@@ -9,24 +9,36 @@
 #define MAX_FIELD_NUM 16
 #define DIRECT_ADDRESS_IDX 8
 
+bool Instruction::NeedSize(OperandType type) {
+    return (type == OperandType::MEMORY &&
+        (opType == OpType::PUSH || opType == OpType::POP));
+}
 
 std::string Instruction::GetMemoryOpStr(const Operand& op) {
     u8 expIdx = (u8)op.address.expIdx;
     i16 disp = op.address.disp;
     assert(expIdx < 9 && disp <= 0xffff);
     std::string dispStr = std::to_string(std::abs(disp));
-    if (expIdx == 8) {
-        return disp < 0 ? "[-" + dispStr + "]" : "[" + dispStr + "]";
-    }
     std::string regExp = addressExps[expIdx];
-    if (disp == 0) {
-        return "[" + regExp + "]";
+    std::string memoryExp;
+    if (expIdx == (u8)AddressExpIdx::DIRECT) {
+        memoryExp = disp < 0 ? "[-" + dispStr + "]" : "[" + dispStr + "]";
+    } else if (disp == 0) {
+        memoryExp =  "[" + regExp + "]";
+    } else {
+        std::string signStr = " + ";
+        if (disp < 0) {
+            signStr[1] = '-';
+        }
+        memoryExp =  "[" + regExp + signStr + dispStr + "]";
     }
-    std::string signStr = " + ";
-    if (disp < 0) {
-        signStr[1] = '-';
+
+    // NOTE: for some reason nasm requires a size to be specified on instructions
+    // like push and pop even though they can only operate on words.
+    if (NeedSize(op.operandType)) {
+        memoryExp = "word " + memoryExp;
     }
-    return "[" + regExp + signStr + dispStr + "]";
+    return memoryExp;
 }
 
 Instruction::Instruction(OpType type, Operand op1, Operand op2) : opType(type), operands{op1, op2} {}

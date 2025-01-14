@@ -126,4 +126,5 @@ private:
 
     std::string GetMemoryOpStr(const Operand& op);
     std::string GetOperandStr(const Operand& op);
+    bool NeedSize(OperandType type);
 };
