@@ -44,6 +44,11 @@ std::string Instruction::GetOperandStr(const Operand& op) {
             assert(regIdx < 8 && isWide < 2);
             return registers[regIdx][isWide];
         }
+        case OperandType::SEG_REG: {
+            u8 sRegIdx = (u8)op.reg.sRegIdx;
+            assert(sRegIdx < 4);
+            return segRegisters[sRegIdx];
+        }
         case OperandType::IMMEDIATE: {
             return (op.immediate.isWide ? "word " : "byte ")  + std::to_string(op.immediate.immI16);
         }
@@ -63,9 +68,11 @@ void Instruction::Print(){
     std::string op1Str = GetOperandStr(operands[0]);
     std::string sep = "";
     std::string op2Str = GetOperandStr(operands[1]);
-    if (operands[1].operandType != OperandType::NONE) {
+    if (operands[1].operandType != OperandType::NONE &&
+        operands[0].operandType != OperandType::NONE) {
         sep = ", ";
     }
+    assert(opStrs[(u8)opType] != "");
     std::string instStr = opStrs[(u8)opType] + " " + op1Str + sep + op2Str;
 
     std::cout << instStr << std::endl;
@@ -92,6 +99,7 @@ bool Operand::operator==(const Operand& rhs) const {
         case OperandType::MEMORY:
             return address.expIdx == rhs.address.expIdx &&
                    address.disp == rhs.address.disp;
+        case OperandType::SEG_REG:
         case OperandType::REGISTER:
             return reg.regIdx == rhs.reg.regIdx &&
                    reg.isWide == rhs.reg.isWide;
@@ -104,7 +112,8 @@ bool Operand::operator==(const Operand& rhs) const {
 }
 
 const std::array<std::string, (u8)OpType::NUM_OPS> Instruction::opStrs = {{
-    "", "add", "sub", "cmp", "mov", "adc", "sbb",
+    "", "add", "sub", "cmp", "mov", "adc", "sbb", "push", "pop", "xchg", "in", "out",
+    "xlat", "lea", "lds", "les", "lahf", "sahf", "pushf", "popf", "or", "and", "xor",
 }};
 
 const std::string Instruction::registers[8][2] = {
@@ -128,4 +137,8 @@ const std::string Instruction::addressExps[9] = {
     "bp",
     "bx",
     "", // direct address (no expression)
+};
+
+const std::string Instruction::segRegisters[] = {
+    "es", "cs", "ss", "ds",
 };

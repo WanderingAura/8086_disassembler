@@ -14,6 +14,13 @@ enum class RegisterIdx : u8 {
     BH_DI,
 };
 
+enum class SegmentRegIdx : u8 {
+    ES,
+    CS,
+    SS,
+    DS,
+};
+
 enum class AddressExpIdx : u8 {
     BX_SI,
     BX_DI,
@@ -27,7 +34,10 @@ enum class AddressExpIdx : u8 {
 };
 
 struct Register {
-    RegisterIdx regIdx;
+    union {
+        RegisterIdx regIdx;
+        SegmentRegIdx sRegIdx;
+    };
     b8 isWide;
 };
 
@@ -47,6 +57,7 @@ struct Immediate {
 enum class OperandType: u8 {
     NONE,
     REGISTER,
+    SEG_REG,
     IMMEDIATE,
     MEMORY,
 };
@@ -70,6 +81,22 @@ enum class OpType : u8 {
     MOV,
     ADC,
     SBB,
+    PUSH,
+    POP,
+    XCHG,
+    IN,
+    OUT,
+    XLAT,
+    LEA,
+    LDS,
+    LES,
+    LAHF,
+    SAHF,
+    PUSHF,
+    POPF,
+    OR,
+    AND,
+    XOR,
     NUM_OPS
 };
 
@@ -85,13 +112,13 @@ public:
     Instruction();
 
     bool operator==(const Instruction& rhs) const; 
-    
 
 private:
     OpType opType;
     Operand operands[2];
 
     static const std::string registers[8][2];
+    static const std::string segRegisters[4];
 
     static const std::array<std::string, (u8)OpType::NUM_OPS> opStrs;
 

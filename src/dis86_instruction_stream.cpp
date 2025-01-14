@@ -17,6 +17,13 @@ inline Operand InstStream::GetRegOperand(u8 regVal, u8 widthVal) {
     return res;
 }
 
+inline Operand InstStream::GetSegRegOperand(u8 regVal) {
+    Operand res = {};
+    res.operandType = OperandType::SEG_REG;
+    res.reg.sRegIdx = (SegmentRegIdx)regVal;
+    return res;
+}
+
 InstStream::InstStream(std::istream *binFile) {
     binFile->read((char *)bytes, ARR_SIZE(bytes));
     size = binFile->gcount();
@@ -113,7 +120,7 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
     bool dataIsW = (bitFieldValues[BitsUsage::WDataIfW] && widthVal && !signVal);
 
     if (hasDisp)
-        bitFieldValues[BitsUsage::Disp] = ParseData(dispIsW, signVal);
+        bitFieldValues[BitsUsage::Disp] = ParseData(dispIsW, true);
     if (hasData)
         bitFieldValues[BitsUsage::Data] = ParseData(dataIsW, signVal);
     
@@ -123,9 +130,12 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
     Operand *regOperand = &operands[dirVal ? 0 : 1];
     Operand *modOperand = &operands[dirVal ? 1 : 0];
 
-    if (bitFieldFlags & (1 << BitsUsage::Reg)) {
+    if (bitFieldFlags & (1 << BitsUsage::SR)) {
+        *regOperand = GetSegRegOperand(regVal);
+    } else if (bitFieldFlags & (1 << BitsUsage::Reg)) {
         *regOperand = GetRegOperand(regVal, widthVal);
     }
+
     if (bitFieldFlags & (1 << BitsUsage::RegMem)) {
         if (modVal == 0b11) {
             *modOperand = GetRegOperand(regMemVal, widthVal);
