@@ -4,6 +4,7 @@ add_executable(dis86_test
     ../src/dis86_instruction.cpp
     ../src/dis86_instruction_stream.cpp
     ../src/dis86_inst_format.cpp
+    ../src/dis86_operand.cpp
 )
 target_include_directories(dis86_test PRIVATE ../src/)
 target_link_libraries(dis86_test gtest_main)
