@@ -50,6 +50,11 @@ std::string Instruction::GetOperandStr(const Operand& op) {
             return segRegisters[sRegIdx];
         }
         case OperandType::IMMEDIATE: {
+            // if the immediate is a byte then truncate it first
+            i16 imm = op.immediate.immI16;
+            if (!op.immediate.isWide) {
+                imm = (i8)imm;
+            }
             return (op.immediate.isWide ? "word " : "byte ")  + std::to_string(op.immediate.immI16);
         }
         case OperandType::MEMORY: {
@@ -104,8 +109,14 @@ bool Operand::operator==(const Operand& rhs) const {
             return reg.regIdx == rhs.reg.regIdx &&
                    reg.isWide == rhs.reg.isWide;
         case OperandType::IMMEDIATE:
-            return immediate.immI16 == rhs.immediate.immI16 &&
-                   immediate.isWide == rhs.immediate.isWide;
+            if (immediate.isWide != rhs.immediate.isWide) {
+                return false;
+            }
+            if (immediate.isWide) {
+                return immediate.immI16 == rhs.immediate.immI16;
+            } else {
+                return (i8)immediate.immI16 == (i8)rhs.immediate.immI16;
+            }
         default:
             return false;
     }
