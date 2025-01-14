@@ -35,7 +35,7 @@ public:
 };
 
 void TestDecodeBytes(const u8 *bytes, i32 size,
-                     const Instruction *expectedInsts, i32 numInsts) {
+                     const Instruction *expectedInsts, u32 numInsts) {
     ASSERT_GT(size, 0);
     ByteStreamBuf buf(bytes, size);
     std::istream byteStream(&buf);
