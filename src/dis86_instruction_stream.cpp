@@ -83,7 +83,7 @@ void InstStream::GetBitFields(u32 &bitFieldFlags,
 
         if (testField.name == BitsUsage::Opcode && testField.val != readVal) {
             // opcode does not match
-            assert(bitFieldFlags == 0);
+            bitFieldFlags = 0;
             readPointer = currentInstPointer;
             return;
         } else {
@@ -111,6 +111,7 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
     u32 widthVal = bitFieldValues[BitsUsage::Width];
     u32 signVal = bitFieldValues[BitsUsage::SignExt];
     u32 regVal = bitFieldValues[BitsUsage::Reg];
+    u32 segRegVal = bitFieldValues[BitsUsage::SR];
     u32 regMemVal = bitFieldValues[BitsUsage::RegMem];
 
     bool hasDirectAddress = ((modVal == 0b00 && regMemVal == 0b110));
@@ -131,7 +132,7 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
     Operand *modOperand = &operands[dirVal ? 1 : 0];
 
     if (bitFieldFlags & (1 << BitsUsage::SR)) {
-        *regOperand = GetSegRegOperand(regVal);
+        *regOperand = GetSegRegOperand(segRegVal);
     } else if (bitFieldFlags & (1 << BitsUsage::Reg)) {
         *regOperand = GetRegOperand(regVal, widthVal);
     }
