@@ -18,6 +18,7 @@ static const BitField RM_BITS = {BitsUsage::RegMem, 3};
 
 static const BitField HAS_DATA = {BitsUsage::HasData, 0, 1};
 static const BitField WDATA_IF_W = {BitsUsage::WDataIfW, 0, 1};
+static const BitField RM_IS_W = {BitsUsage::RMIsW, 0, 1};
 
 static std::unordered_map<OpType, u8> BINARY_OP_LITS = {
     {OpType::ADD, 0},
@@ -84,6 +85,11 @@ static const InstructionFormat MovAcc2Mem() {
         DummyD(OpDirection::ModFirst)}} };
 }
 
+static const InstructionFormat MovSR2RM() {
+    return { OpType::MOV, {{ BitLiteral(0b100011, 6), D_BIT, BitLiteral(0b0, 1),
+        MOD_BITS, BitLiteral(0b0, 1), SR_BITS, RM_BITS }} };
+}
+
 static const InstructionFormat OpImm2RM(OpType type, BitField opField) {
     assert(opField.numBits == 6);
     u8 lit = BINARY_OP_LITS.at(type);
@@ -126,6 +132,59 @@ static const InstructionFormat PopSR() {
     return { OpType::POP, {{ BitLiteral(0b000, 3), SR_BITS, BitLiteral(0b111, 3) }} };
 }
 
+static const InstructionFormat XCHGRegRM() {
+    return { OpType::XCHG, {{ BitLiteral(0b1000011, 7), W_BIT,
+        MOD_BITS, REG_BITS, RM_BITS }} };
+}
+
+static const InstructionFormat XCHGRegAcc() {
+    return { OpType::XCHG, {{ BitLiteral(0b10010, 5), REG_BITS, DummyW(true), DummyRM(0b000), DummyMod(0b11) }} };
+}
+
+static const InstructionFormat InPort2Acc() {
+    return { OpType::IN, {{ BitLiteral(0b1110010, 7), W_BIT,
+        HAS_DATA, DummyReg(0), DummyD(OpDirection::RegFirst) }} };
+}
+
+static const InstructionFormat OutAcc2Port() {
+    return { OpType::OUT, {{ BitLiteral(0b1110011, 7), W_BIT,
+        HAS_DATA, DummyReg(0), DummyD(OpDirection::ModFirst) }} };
+}
+
+static const InstructionFormat InDX2Acc() {
+    return { OpType::IN, {{ BitLiteral(0b1110110, 7), W_BIT,
+        DummyReg(0b000), DummyD(OpDirection::RegFirst),
+        DummyMod(0b11), DummyRM(0b10), RM_IS_W }} };
+}
+
+static const InstructionFormat OutDX2Acc() {
+    return { OpType::OUT, {{ BitLiteral(0b1110111, 7), W_BIT,
+        DummyReg(0b000), DummyD(OpDirection::ModFirst),
+        DummyMod(0b11), DummyRM(0b10), RM_IS_W }} };
+}
+
+static const InstructionFormat XLAT() {
+    return { OpType::XLAT, {{ BitLiteral(0b11010111, 8) }} };
+}
+
+static const InstructionFormat LEA() {
+    return { OpType::LEA, {{ BitLiteral(0b10001101, 8),
+        MOD_BITS, REG_BITS, RM_BITS,
+        DummyD(OpDirection::RegFirst), DummyW(true) }} };
+}
+
+static const InstructionFormat LDS() {
+    return { OpType::LDS, {{ BitLiteral(0b11000101, 8),
+        MOD_BITS, REG_BITS, RM_BITS,
+        DummyD(OpDirection::RegFirst), DummyW(true) }} };
+}
+
+static const InstructionFormat LES() {
+    return { OpType::LES, {{ BitLiteral(0b11000100, 8),
+        MOD_BITS, REG_BITS, RM_BITS,
+        DummyD(OpDirection::RegFirst), DummyW(true) }} };
+}
+
 const InstructionFormat InstStream::formats[] = {
     // mov instructions
     RM2Reg(OpType::MOV, BitLiteral(0b100010, 6)),
@@ -133,6 +192,7 @@ const InstructionFormat InstStream::formats[] = {
     Imm2Reg(OpType::MOV, BitLiteral(0b1011, 4)),
     MovAcc2Mem(),
     MovMem2Acc(),
+    MovSR2RM(),
     
     // add instructions
     RM2Reg(OpType::ADD, BitLiteral(0b000000, 6)),
@@ -166,4 +226,23 @@ const InstructionFormat InstStream::formats[] = {
     OpReg(OpType::POP, BitLiteral(0b01011, 5)),
     PopSR(),
     
+    // xchg
+    XCHGRegRM(),
+    XCHGRegAcc(),
+    
+    // in
+    InPort2Acc(),
+    InDX2Acc(),
+
+    // out
+    OutAcc2Port(),
+    OutDX2Acc(),
+
+    // other
+    XLAT(),
+    LEA(),
+    LDS(),
+    LES(),
+
+
 };

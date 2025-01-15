@@ -119,6 +119,7 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
     bool dispIsW = (modVal == 0b10 || hasDirectAddress);
     bool hasData = bitFieldValues[BitsUsage::HasData];
     bool dataIsW = (bitFieldValues[BitsUsage::WDataIfW] && widthVal && !signVal);
+    bool rmAlwaysW = bitFieldValues[BitsUsage::RMIsW];
 
     if (hasDisp)
         bitFieldValues[BitsUsage::Disp] = ParseData(dispIsW, true);
@@ -139,7 +140,7 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
 
     if (bitFieldFlags & (1 << BitsUsage::RegMem)) {
         if (modVal == 0b11) {
-            *modOperand = GetRegOperand(regMemVal, widthVal);
+            *modOperand = GetRegOperand(regMemVal, widthVal | rmAlwaysW);
         } else {
             modOperand->operandType = OperandType::MEMORY;
             if (hasDirectAddress) {
