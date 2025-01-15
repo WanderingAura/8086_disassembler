@@ -26,7 +26,4 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG $(CMAKE_SOURCE_DIR)/bin/Debug)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE $(CMAKE_SOURCE_DIR)/bin/Release)
-
 target_include_directories(dis86 PRIVATE src/)
