@@ -53,6 +53,10 @@ les di, [bx + si - 7]
 |         lea                      |
 |         lds                      |
 |         les                      |
+|         lahf                     |
+|         sahf                     |
+|         pushf                    |
+|         popf                     |
 |                                  |
 
 

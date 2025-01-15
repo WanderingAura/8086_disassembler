@@ -49,7 +49,7 @@ private:
     u32 currentInstPointer;
     u32 readPointer;
 
-    static const InstructionFormat formats[37];
+    static const InstructionFormat formats[41];
 
     static inline Operand GetRegOperand(u8 regVal, u8 widthVal);
     static inline Operand GetSegRegOperand(u8 regVal);

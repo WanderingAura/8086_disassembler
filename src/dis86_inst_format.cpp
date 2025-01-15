@@ -163,8 +163,8 @@ static const InstructionFormat OutDX2Acc() {
         DummyMod(0b11), DummyRM(0b10), RM_IS_W }} };
 }
 
-static const InstructionFormat XLAT() {
-    return { OpType::XLAT, {{ BitLiteral(0b11010111, 8) }} };
+static const InstructionFormat InstOnly(OpType type, u8 bits) {
+    return { type, {{ BitLiteral(bits, 8) }} };
 }
 
 static const InstructionFormat LEA() {
@@ -238,11 +238,16 @@ const InstructionFormat InstStream::formats[] = {
     OutAcc2Port(),
     OutDX2Acc(),
 
-    // other
-    XLAT(),
+    // effective address insts
     LEA(),
     LDS(),
     LES(),
 
+    // one byte insts
+    InstOnly(OpType::XLAT, 0b11010111),
+    InstOnly(OpType::LAHF, 0b10011111),
+    InstOnly(OpType::SAHF, 0b10011110),
+    InstOnly(OpType::PUSHF, 0b10011100),
+    InstOnly(OpType::POPF, 0b10011101),
 
 };
