@@ -60,4 +60,6 @@ bool Instruction::operator==(const Instruction& rhs) const{
 const std::array<std::string, (u8)OpType::NUM_OPS> Instruction::opStrs = {{
     "", "add", "sub", "cmp", "mov", "adc", "sbb", "push", "pop", "xchg", "in", "out",
     "xlat", "lea", "lds", "les", "lahf", "sahf", "pushf", "popf", "or", "and", "xor",
+    "inc", "aaa", "daa", "dec", "neg", "aas", "das", "mul", "imul", "aam", "div",
+    "idiv", "aad", "cbw", "cwd",
 }};

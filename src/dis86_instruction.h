@@ -28,6 +28,21 @@ enum class OpType : u8 {
     OR,
     AND,
     XOR,
+    INC,
+    AAA,
+    DAA,
+    DEC,
+    NEG,
+    AAS,
+    DAS,
+    MUL,
+    IMUL,
+    AAM,
+    DIV,
+    IDIV,
+    AAD,
+    CBW,
+    CWD,
     NUM_OPS
 };
 

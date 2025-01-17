@@ -185,6 +185,19 @@ static const InstructionFormat LES() {
         DummyD(OpDirection::RegFirst), DummyW(true) }} };
 }
 
+static const InstructionFormat OpRMWithW(OpType type, u8 opBits, u8 literalBits) {
+    return { type, {{ BitLiteral(opBits, 7), W_BIT,
+        MOD_BITS, BitLiteral(literalBits, 3), RM_BITS }} };
+}
+
+static const InstructionFormat AAM() {
+    return { OpType::AAM, {{ BitLiteral(0b11010100, 8), BitLiteral(0b00001010, 8) }} };
+}
+
+static const InstructionFormat AAD() {
+    return { OpType::AAD, {{ BitLiteral(0b11010101, 8), BitLiteral(0b00001010, 8) }} };
+}
+
 const InstructionFormat InstStream::formats[] = {
     // mov instructions
     RM2Reg(OpType::MOV, BitLiteral(0b100010, 6)),
@@ -249,5 +262,33 @@ const InstructionFormat InstStream::formats[] = {
     InstOnly(OpType::SAHF, 0b10011110),
     InstOnly(OpType::PUSHF, 0b10011100),
     InstOnly(OpType::POPF, 0b10011101),
+
+    // inc
+    OpRMWithW(OpType::INC, 0b1111111, 0b000),
+    OpReg(OpType::INC, BitLiteral(0b01000, 5)),
+
+    // aaa daa
+    InstOnly(OpType::AAA, 0b00110111),
+    InstOnly(OpType::DAA, 0b00100111),
+
+    // dec
+    OpRMWithW(OpType::DEC, 0b1111111, 0b001),
+    OpReg(OpType::DEC, BitLiteral(0b01001, 5)),
+
+    // neg
+    OpRMWithW(OpType::NEG, 0b1111011, 0b011),
+
+    InstOnly(OpType::AAS, 0b00111111),
+    InstOnly(OpType::DAS, 0b00101111),
+    
+    OpRMWithW(OpType::MUL, 0b1111011, 0b100),
+    OpRMWithW(OpType::IMUL, 0b1111011, 0b101),
+    OpRMWithW(OpType::DIV, 0b1111011, 0b110),
+    OpRMWithW(OpType::IDIV, 0b1111011, 0b111),
+    AAM(),
+    AAD(),
+    InstOnly(OpType::CBW, 0b10011000),
+    InstOnly(OpType::CWD, 0b10011001),
+
 
 };
