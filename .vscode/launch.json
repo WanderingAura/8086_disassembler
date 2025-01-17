@@ -20,7 +20,7 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Debug/dis86.exe",
-            "args": ["${workspaceFolder}/tests/asm/xlat_lea_lds_les"],
+            "args": ["${workspaceFolder}/tests/asm/all_supported"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

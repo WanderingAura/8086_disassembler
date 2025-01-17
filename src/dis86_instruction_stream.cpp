@@ -140,7 +140,7 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
 
     if (bitFieldFlags & (1 << BitsUsage::RegMem)) {
         if (modVal == 0b11) {
-            *modOperand = GetRegOperand(regMemVal, widthVal | rmAlwaysW);
+            *modOperand = GetRegOperand(regMemVal, widthVal || rmAlwaysW);
         } else {
             modOperand->operandType = OperandType::MEMORY;
             if (hasDirectAddress) {
@@ -149,6 +149,7 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
                 modOperand->address.expIdx = (AddressExpIdx)regMemVal;
             }
             modOperand->address.disp = disp;
+            modOperand->address.isWide = widthVal;
         }
     }
 

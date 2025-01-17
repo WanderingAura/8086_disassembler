@@ -5,13 +5,31 @@
 #include <array>
 #include <cassert>
 #include <cmath>
+#include <algorithm>
 
 #define MAX_FIELD_NUM 16
 #define DIRECT_ADDRESS_IDX 8
 
+template<typename C, typename T>
+bool contains(C&& c, T e) { 
+    return std::find(std::begin(c), std::end(c), e) != std::end(c);
+};
+
 bool Instruction::NeedSize(OperandType type) {
-    return (type == OperandType::MEMORY &&
-        (opType == OpType::PUSH || opType == OpType::POP));
+    static const std::array<OpType, 9> needSizeOptypes = {{
+        OpType::PUSH,
+        OpType::POP,
+        OpType::INC,
+        OpType::DEC,
+        OpType::NEG,
+        OpType::MUL,
+        OpType::IMUL,
+        OpType::DIV,
+        OpType::IDIV,
+    }};
+    
+    return ((type == OperandType::MEMORY) &&
+        contains(needSizeOptypes, opType));
 }
 
 Instruction::Instruction(OpType type, Operand op1, Operand op2) : opType(type), operands{op1, op2} {}
@@ -27,7 +45,8 @@ void Instruction::Print(){
             // NOTE: for some reason nasm requires a size to be specified
             // on instructions like push and pop even though they can
             // only operate on words.
-            operandStrs[i] = "word " + operands[i].GetStr();
+            std::string sizeStr = operands[i].address.isWide ? "word " : "byte ";
+            operandStrs[i] = sizeStr + operands[i].GetStr();
         } else {
             operandStrs[i] = operands[i].GetStr();
         }

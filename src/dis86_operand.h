@@ -42,6 +42,7 @@ struct Register {
 
 struct EffectiveAddressExp {
     AddressExpIdx expIdx;
+    u8 isWide;
     i16 disp;
 };
 
