@@ -57,6 +57,21 @@ les di, [bx + si - 7]
 |         sahf                     |
 |         pushf                    |
 |         popf                     |
+|         inc                      |
+|         aaa                      |
+|         daa                      |
+|         dec                      |
+|         neg                      |
+|         aas                      |
+|         das                      |
+|         mul                      |
+|         imul                     |
+|         aam                      |
+|         div                      |
+|         idiv                     |
+|         aad                      |
+|         cbw                      |
+|         cwd                      |
 |                                  |
 
 
