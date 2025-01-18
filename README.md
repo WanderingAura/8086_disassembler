@@ -72,7 +72,14 @@ les di, [bx + si - 7]
 |         aad                      |
 |         cbw                      |
 |         cwd                      |
-|                                  |
+|         not                      |
+|         shl                      |
+|         shr                      |
+|         sar                      |
+|         rol                      |
+|         ror                      |
+|         rcl                      |
+|         rcr                      |
 
 
 ## Build Instructions (VSCode)
