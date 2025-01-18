@@ -20,7 +20,7 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Debug/dis86.exe",
-            "args": ["${workspaceFolder}/tests/asm/all_supported"],
+            "args": ["${workspaceFolder}/tests/asm/shift"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

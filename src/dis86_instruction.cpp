@@ -16,7 +16,7 @@ bool contains(C&& c, T e) {
 };
 
 bool Instruction::NeedSize(OperandType type) {
-    static const std::array<OpType, 9> needSizeOptypes = {{
+    static const std::array<OpType, 16> needSizeOptypes = {{
         OpType::PUSH,
         OpType::POP,
         OpType::INC,
@@ -26,6 +26,13 @@ bool Instruction::NeedSize(OperandType type) {
         OpType::IMUL,
         OpType::DIV,
         OpType::IDIV,
+        OpType::SHL,
+        OpType::SHR,
+        OpType::SAR,
+        OpType::ROL,
+        OpType::ROR,
+        OpType::RCL,
+        OpType::RCR,
     }};
     
     return ((type == OperandType::MEMORY) &&
@@ -80,5 +87,5 @@ const std::array<std::string, (u8)OpType::NUM_OPS> Instruction::opStrs = {{
     "", "add", "sub", "cmp", "mov", "adc", "sbb", "push", "pop", "xchg", "in", "out",
     "xlat", "lea", "lds", "les", "lahf", "sahf", "pushf", "popf", "or", "and", "xor",
     "inc", "aaa", "daa", "dec", "neg", "aas", "das", "mul", "imul", "aam", "div",
-    "idiv", "aad", "cbw", "cwd",
+    "idiv", "aad", "cbw", "cwd", "not", "shl", "shr", "sar", "rol", "ror", "rcl", "rcr",
 }};

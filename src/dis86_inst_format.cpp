@@ -10,6 +10,7 @@ static const BitField BitLiteral(u8 bits, u8 size) {
 
 static const BitField D_BIT = {BitsUsage::Direction, 1}; 
 static const BitField S_BIT = {BitsUsage::SignExt, 1};
+static const BitField V_BIT = {BitsUsage::IsShiftCL, 1};
 static const BitField W_BIT = {BitsUsage::Width, 1};
 static const BitField MOD_BITS = {BitsUsage::Mod, 2};
 static const BitField REG_BITS = {BitsUsage::Reg, 3};
@@ -190,6 +191,12 @@ static const InstructionFormat OpRMWithW(OpType type, u8 opBits, u8 literalBits)
         MOD_BITS, BitLiteral(literalBits, 3), RM_BITS }} };
 }
 
+static const InstructionFormat OpRMWithVW(OpType type, u8 opBits, u8 literalBits) {
+    return { type, {{ BitLiteral(opBits, 6), V_BIT, W_BIT,
+        MOD_BITS, BitLiteral(literalBits, 3), RM_BITS,
+        DummyD(OpDirection::ModFirst) }} };
+}
+
 static const InstructionFormat AAM() {
     return { OpType::AAM, {{ BitLiteral(0b11010100, 8), BitLiteral(0b00001010, 8) }} };
 }
@@ -290,5 +297,14 @@ const InstructionFormat InstStream::formats[] = {
     InstOnly(OpType::CBW, 0b10011000),
     InstOnly(OpType::CWD, 0b10011001),
 
+    // shift
+    OpRMWithW(OpType::NOT, 0b1111011, 0b010),
+    OpRMWithVW(OpType::SHL, 0b110100, 0b100),
+    OpRMWithVW(OpType::SHR, 0b110100, 0b101),
+    OpRMWithVW(OpType::SAR, 0b110100, 0b111),
+    OpRMWithVW(OpType::ROL, 0b110100, 0b000),
+    OpRMWithVW(OpType::ROR, 0b110100, 0b001),
+    OpRMWithVW(OpType::RCL, 0b110100, 0b010),
+    OpRMWithVW(OpType::RCR, 0b110100, 0b011),
 
 };

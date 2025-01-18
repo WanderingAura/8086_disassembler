@@ -74,6 +74,11 @@ std::string Operand::GetStr() const {
             if (!immediate.isWide) {
                 imm = (i8)imm;
             }
+            // TODO: currently word/byte appears before immediates no matter what
+            // this causes a bug for shift instructions. when the output of the
+            // disassembler gets fed back into nasm, nasm will read 'byte'/'word' and
+            // assume the encoding should be shr rm16, imm8 rather than shr rm16, 1.
+            // goal: refactor so that byte/word appear only when needed
             return (immediate.isWide ? "word " : "byte ")  + std::to_string(immediate.immI16);
         }
         case OperandType::MEMORY: {

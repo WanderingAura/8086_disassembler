@@ -16,6 +16,7 @@ enum BitsUsage : u8{
     RegMem,
     Direction,
     Width,
+    IsShiftCL,
     SignExt,
     Disp,
     Data,
@@ -49,7 +50,7 @@ private:
     u32 currentInstPointer;
     u32 readPointer;
 
-    static const InstructionFormat formats[58];
+    static const InstructionFormat formats[67];
 
     static inline Operand GetRegOperand(u8 regVal, u8 widthVal);
     static inline Operand GetSegRegOperand(u8 regVal);

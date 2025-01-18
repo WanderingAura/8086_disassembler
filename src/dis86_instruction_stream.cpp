@@ -166,6 +166,17 @@ Instruction InstStream::TryDecode(const InstructionFormat format) {
         nextUnusedOp->immediate.isWide = dataIsW;
     }
 
+    if (bitFieldFlags & (1 << BitsUsage::IsShiftCL)) {
+        static const u8 C_REG = 1;
+        if (bitFieldValues[BitsUsage::IsShiftCL]) {
+            *nextUnusedOp = GetRegOperand(C_REG, false);
+        } else {
+            nextUnusedOp->operandType = OperandType::IMMEDIATE;
+            nextUnusedOp->immediate.immU16 = 1;
+            nextUnusedOp->immediate.isWide = 0;
+        }
+    }
+
     return Instruction(format.op, operands[0], operands[1]);
 }
 

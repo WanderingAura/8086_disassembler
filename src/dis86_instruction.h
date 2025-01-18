@@ -43,6 +43,14 @@ enum class OpType : u8 {
     AAD,
     CBW,
     CWD,
+    NOT,
+    SHL,
+    SHR,
+    SAR,
+    ROL,
+    ROR,
+    RCL,
+    RCR,
     NUM_OPS
 };
 
